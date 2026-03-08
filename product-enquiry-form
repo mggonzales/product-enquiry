@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Enquiry Form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f4f4f4;
+      color: #020817;
+    }
+
+    /* ── Demo banner ── */
+    .assistance-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 24px 28px;
+      background: #fff;
+      max-width: 860px;
+      margin: 40px auto;
+      gap: 24px;
+    }
+    .assistance-banner__heading {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #020817;
+      margin-bottom: 8px;
+    }
+    .assistance-banner__text {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    .btn-enquiry {
+      flex-shrink: 0;
+      background: #2b4ee5;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 14px 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-enquiry:hover { background: #1e3bc0; }
+
+    /* ── Overlay ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.80);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.is-open {
+      display: flex;
+    }
+
+    /* ── Modal card ── */
+    .modal-card {
+      background: #fff;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 512px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    /* ── Modal header ── */
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #020817;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      font-size: 22px;
+    }
+    .modal-close:hover { color: #020817; background: #f3f4f6; }
+
+    /* ── Modal body ── */
+    .modal-body { padding: 20px 24px 24px; }
+
+    /* ── Form fields ── */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+    .form-label .req { color: #ef4444; margin-left: 2px; }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      background: #e6edf3;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      color: #020817;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-control:focus {
+      border-color: #2b4ee5;
+      box-shadow: 0 0 0 3px rgba(43, 78, 229, 0.12);
+      background: #fff;
+    }
+    .form-control[readonly] {
+      background: #f3f4f6;
+      color: #6b7280;
+      cursor: default;
+    }
+    .form-control[readonly]:focus {
+      border-color: #d1d5db;
+      box-shadow: none;
+    }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      padding: 13px 20px;
+      background: #2b4ee5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.2s;
+    }
+    .btn-submit:hover:not(:disabled) { background: #1e3bc0; }
+    .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* ── Status messages ── */
+    .status-msg {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .status-success { display: block; background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .status-error   { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .assistance-banner { flex-direction: column; align-items: flex-start; }
+      .btn-enquiry { width: 100%; text-align: center; }
+      .modal-body { padding: 16px 16px 20px; }
+      .modal-header { padding: 16px 16px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    ================================================================
+    DEMO TRIGGER BUTTON
+    On your real product page, use any button with:
+      - onclick="openEnquiryModal(this)"
+      - data-product="YOUR PRODUCT NAME HERE"
+    ================================================================
+  -->
+  <div class="assistance-banner">
+    <div>
+      <div class="assistance-banner__heading">Need Some Assistance?</div>
+      <p class="assistance-banner__text">If you have any enquiries about this product, click the button<br>and fill out our form.</p>
+    </div>
+    <button
+      class="btn-enquiry"
+      onclick="openEnquiryModal(this)"
+      data-product="Hussla Vienna Gloss Black 19x8.5"
+    >
+      Send a Product Enquiry
+    </button>
+  </div>
+
+  <!--
+    ================================================================
+    MODAL — copy from here to the closing </div><!-- /modal-end -->
+    into your product page template
+    ================================================================
+  -->
+  <div id="enquiryModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal-card">
+
+      <div class="modal-header">
+        <span class="modal-title">Send Enquiry</span>
+        <button class="modal-close" onclick="closeEnquiryModal()" aria-label="Close">&#x2715;</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="enquiryForm" onsubmit="handleEnquirySubmit(event)">
+
+          <div class="form-group">
+            <label class="form-label" for="productName">Product Name</label>
+            <input class="form-control" type="text" id="productName" name="productName" placeholder="Product" readonly />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="vehicleName">Vehicle Name</label>
+            <input class="form-control" type="text" id="vehicleName" name="vehicleName" value="PLEASE SELECT A VEHICLE" readonly />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="enquiryName">Name <span class="req">*</span></label>
+            <input class="form-control" type="text" id="enquiryName" name="name" placeholder="Name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="enquiryPhone">Phone <span class="req">*</span></label>
+            <input class="form-control" type="tel" id="enquiryPhone" name="phone" placeholder="Phone" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="enquiryEmail">Email</label>
+            <input class="form-control" type="email" id="enquiryEmail" name="email" placeholder="Email" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="enquiryMessage">Message</label>
+            <textarea class="form-control" id="enquiryMessage" name="message" placeholder="Message"></textarea>
+          </div>
+
+          <button class="btn-submit" type="submit" id="submitBtn">Submit Enquiry</button>
+
+          <div class="status-msg" id="statusMsg"></div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+  <!-- /modal-end -->
+
+  <script>
+    // ================================================================
+    // CONFIGURATION — replace with your GHL Inbound Webhook URL
+    // ================================================================
+    var GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/YOUR_WEBHOOK_ID/webhook-trigger/YOUR_TRIGGER_ID";
+    // ================================================================
+
+    // Open the modal and populate the product name
+    function openEnquiryModal(triggerEl) {
+      var modal = document.getElementById('enquiryModal');
+
+      // Get product name from data-product attribute, or h1, or page title
+      var productName = '';
+      if (triggerEl && triggerEl.getAttribute('data-product')) {
+        productName = triggerEl.getAttribute('data-product');
+      } else if (document.querySelector('h1')) {
+        productName = document.querySelector('h1').textContent.trim();
+      } else {
+        productName = document.title;
+      }
+      document.getElementById('productName').value = productName;
+
+      // Get vehicle name from localStorage if previously selected
+      var savedVehicle = localStorage.getItem('selectedVehicle') || '';
+      document.getElementById('vehicleName').value = savedVehicle || 'PLEASE SELECT A VEHICLE';
+
+      // Show modal
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close the modal
+    function closeEnquiryModal() {
+      var modal = document.getElementById('enquiryModal');
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+      document.getElementById('enquiryForm').reset();
+      document.getElementById('vehicleName').value = 'PLEASE SELECT A VEHICLE';
+      var statusMsg = document.getElementById('statusMsg');
+      statusMsg.className = 'status-msg';
+      statusMsg.textContent = '';
+    }
+
+    // Close when clicking the dark backdrop (outside the card)
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('enquiryModal')) {
+        closeEnquiryModal();
+      }
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeEnquiryModal();
+    });
+
+    // Handle form submission
+    function handleEnquirySubmit(e) {
+      e.preventDefault();
+
+      var name  = document.getElementById('enquiryName').value.trim();
+      var phone = document.getElementById('enquiryPhone').value.trim();
+      var statusMsg = document.getElementById('statusMsg');
+      var submitBtn = document.getElementById('submitBtn');
+
+      // Validate required fields
+      if (!name || !phone) {
+        statusMsg.className = 'status-msg status-error';
+        statusMsg.textContent = 'Please fill in your Name and Phone number.';
+        return;
+      }
+
+      // Warn if webhook not configured
+      if (GHL_WEBHOOK_URL.indexOf('YOUR_WEBHOOK_ID') !== -1) {
+        statusMsg.className = 'status-msg status-error';
+        statusMsg.textContent = 'Webhook URL not configured. Please update GHL_WEBHOOK_URL in the code.';
+        return;
+      }
+
+      // Loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      var nameParts = name.split(' ');
+      var payload = {
+        productName : document.getElementById('productName').value.trim(),
+        vehicleName : document.getElementById('vehicleName').value.trim(),
+        firstName   : nameParts[0] || name,
+        lastName    : nameParts.slice(1).join(' ') || '',
+        fullName    : name,
+        phone       : phone,
+        email       : document.getElementById('enquiryEmail').value.trim(),
+        message     : document.getElementById('enquiryMessage').value.trim(),
+        source      : 'Product Enquiry Form',
+        pageUrl     : window.location.href,
+        submittedAt : new Date().toISOString()
+      };
+
+      fetch(GHL_WEBHOOK_URL, {
+        method  : 'POST',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify(payload)
+      })
+      .then(function() {
+        statusMsg.className = 'status-msg status-success';
+        statusMsg.textContent = "Thank you! Your enquiry has been submitted. We'll be in touch shortly.";
+        document.getElementById('enquiryForm').reset();
+        document.getElementById('productName').value = payload.productName;
+        document.getElementById('vehicleName').value = 'PLEASE SELECT A VEHICLE';
+        setTimeout(closeEnquiryModal, 3000);
+      })
+      .catch(function() {
+        statusMsg.className = 'status-msg status-error';
+        statusMsg.textContent = 'Something went wrong. Please try again or call us directly.';
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Enquiry';
+      });
+    }
+  </script>
+
+</body>
+</html>
