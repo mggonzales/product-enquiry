@@ -254,7 +254,7 @@
 
           <div class="form-group">
             <label class="form-label" for="vehicleName">Vehicle Name</label>
-            <input class="form-control" type="text" id="vehicleName" name="vehicleName" value="PLEASE SELECT A VEHICLE" readonly />
+            <input class="form-control" type="text" id="vehicleName" name="vehicleName" placeholder="Enter your vehicle (e.g. 2020 Toyota Hilux)" />
           </div>
 
           <div class="form-group">
@@ -310,9 +310,8 @@
       }
       document.getElementById('productName').value = productName;
 
-      // Get vehicle name from localStorage if previously selected
-      var savedVehicle = localStorage.getItem('selectedVehicle') || '';
-      document.getElementById('vehicleName').value = savedVehicle || 'PLEASE SELECT A VEHICLE';
+      // Clear vehicle name field so user can type their own vehicle
+      document.getElementById('vehicleName').value = '';
 
       // Show modal
       modal.classList.add('is-open');
@@ -325,7 +324,6 @@
       modal.classList.remove('is-open');
       document.body.style.overflow = '';
       document.getElementById('enquiryForm').reset();
-      document.getElementById('vehicleName').value = 'PLEASE SELECT A VEHICLE';
       var statusMsg = document.getElementById('statusMsg');
       statusMsg.className = 'status-msg';
       statusMsg.textContent = '';
@@ -395,7 +393,6 @@
         statusMsg.textContent = "Thank you! Your enquiry has been submitted. We'll be in touch shortly.";
         document.getElementById('enquiryForm').reset();
         document.getElementById('productName').value = payload.productName;
-        document.getElementById('vehicleName').value = 'PLEASE SELECT A VEHICLE';
         setTimeout(closeEnquiryModal, 3000);
       })
       .catch(function() {
